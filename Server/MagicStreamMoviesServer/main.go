@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	controller "github.com/AlureLove/Netflix-Clone/Server/MagicStreamMoviesServer/controllers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,6 +13,9 @@ func main() {
 	router.GET("/hello", func(c *gin.Context) {
 		c.String(200, "Hello, MagicStreamMovies!")
 	})
+
+	router.GET("/movies", controller.GetMovies())
+	router.GET("/movie/:imdb_id", controller.GetMovie())
 
 	if err := router.Run(":8081"); err != nil {
 		fmt.Println("Failed to start server:", err)
