@@ -30,6 +30,9 @@ class HomeViewController: UIViewController {
         
         let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
+        
+        // Load trending movies
+        fetchTrendingMovies()
     }
     
     override func viewDidLayoutSubviews() {
@@ -61,6 +64,37 @@ class HomeViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
+    }
+    
+    // MARK: - Networking
+    
+    private func fetchTrendingMovies() {
+        Task {
+            do {
+                let movies = try await APICaller.shared.getTrendingMovies()
+                print("✅ Successfully fetched \(movies.count) trending movies")
+                
+                if let firstMovie = movies.first {
+                    print("First movie: \(firstMovie.title ?? firstMovie.originalTitle)")
+                    print("Overview: \(firstMovie.overview)")
+                }
+            } catch {
+                print("❌ Error fetching trending movies: \(error)")
+                // Handle error appropriately (show alert, etc.)
+                await showError(error)
+            }
+        }
+    }
+    
+    @MainActor
+    private func showError(_ error: Error) {
+        let alert = UIAlertController(
+            title: "Error",
+            message: "Failed to load movies: \(error.localizedDescription)",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
