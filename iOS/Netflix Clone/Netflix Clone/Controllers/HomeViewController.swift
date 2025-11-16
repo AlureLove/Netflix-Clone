@@ -41,13 +41,26 @@ class HomeViewController: UIViewController {
     private func configureNavbar() {
         var image = UIImage(named: "netflix_logo")
         image = image?.withRenderingMode(.alwaysOriginal)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .prominent, target: self, action: nil)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .plain, target: self, action: nil)
         
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "person"), style: .prominent, target: self, action: nil),
-            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .prominent, target: self, action: nil)
+            UIBarButtonItem(image: UIImage(systemName: "person"), style: .plain, target: self, action: nil),
+            UIBarButtonItem(image: UIImage(systemName: "play.rectangle"), style: .plain, target: self, action: nil)
         ]
         navigationController?.navigationBar.tintColor = .white
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        
+        let buttonAppearance = UIBarButtonItemAppearance()
+        buttonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        appearance.buttonAppearance = buttonAppearance
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
     }
 }
 
