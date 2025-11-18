@@ -7,19 +7,30 @@
 
 import UIKit
 
+enum Sections: Int {
+    case TrendingMovies = 0
+    case TrendingTV
+    case Popular
+    case UpcomingMovies
+    case TopRated
+}
+
 class HomeViewController: UIViewController {
     
-    let sectionTitles: [String] = ["Trending Movies", "Popular", "Trending TV", "Upcoming Movies", "Top Rated"]
+    let sectionTitles: [String] = ["Trending Movies", "Trending TV", "Popular", "Upcoming Movies", "Top Rated"]
+    
+    // Cache data for each section
+    private var sectionData: [Int: [Title]] = [:]
     
     private let homeFeedTable: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.register(CollectionViewTableViewCell.self, forCellReuseIdentifier: CollectionViewTableViewCell.identifier)
         return tableView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view.backgroundColor = .systemBackground
         view.addSubview(homeFeedTable)
         
@@ -31,8 +42,8 @@ class HomeViewController: UIViewController {
         let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
         
-        // Load trending movies
-        fetchTrendingMovies()
+        // Load all section data
+        loadAllSections()
     }
     
     override func viewDidLayoutSubviews() {
@@ -68,33 +79,51 @@ class HomeViewController: UIViewController {
     
     // MARK: - Networking
     
+    private func loadAllSections() {
+        Task {
+            // Load all sections concurrently
+            async let trendingMovies = APICaller.shared.getTrendingMovies()
+            async let trendingTVs = APICaller.shared.getTrendingTVs()
+            async let popularMovies = APICaller.shared.getPopularMovies()
+            async let upcomingMovies = APICaller.shared.getUpcomingMovies()
+            async let topRatedMovies = APICaller.shared.getTopRatedMovies()
+            
+            do {
+                let results = try await (
+                    trendingMovies,
+                    trendingTVs,
+                    popularMovies,
+                    upcomingMovies,
+                    topRatedMovies
+                )
+                
+                // Update on main thread
+                await MainActor.run {
+                    self.sectionData[Sections.TrendingMovies.rawValue] = results.0
+                    self.sectionData[Sections.TrendingTV.rawValue] = results.1
+                    self.sectionData[Sections.Popular.rawValue] = results.2
+                    self.sectionData[Sections.UpcomingMovies.rawValue] = results.3
+                    self.sectionData[Sections.TopRated.rawValue] = results.4
+                    
+                    self.homeFeedTable.reloadData()
+                }
+                
+                print("✅ Successfully loaded all sections")
+            } catch {
+                print("❌ Error loading sections: \(error)")
+            }
+        }
+    }
+    
     private func fetchTrendingMovies() {
         Task {
             do {
                 let movies = try await APICaller.shared.getTrendingMovies()
                 print("✅ Successfully fetched \(movies.count) trending movies")
-                
-                if let firstMovie = movies.first {
-                    print("First movie: \(firstMovie.title ?? firstMovie.originalTitle)")
-                    print("Overview: \(firstMovie.overview)")
-                }
             } catch {
                 print("❌ Error fetching trending movies: \(error)")
-                // Handle error appropriately (show alert, etc.)
-                await showError(error)
             }
         }
-    }
-    
-    @MainActor
-    private func showError(_ error: Error) {
-        let alert = UIAlertController(
-            title: "Error",
-            message: "Failed to load movies: \(error.localizedDescription)",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }
 
@@ -110,6 +139,11 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
+        }
+        
+        // Use cached data if available
+        if let titles = sectionData[indexPath.section] {
+            cell.configure(with: titles)
         }
         
         return cell
@@ -132,7 +166,7 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         header.textLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
         header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 100, height: header.bounds.height)
         header.textLabel?.textColor = .white
-        header.textLabel?.text = header.textLabel?.text?.lowercased()
+        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

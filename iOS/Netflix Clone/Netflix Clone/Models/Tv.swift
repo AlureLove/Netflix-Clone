@@ -1,65 +1,49 @@
 //
-//  Movie.swift
+//  Tv.swift
 //  Netflix Clone
 //
-//  Created by Jethro Liu on 2025/11/16.
+//  Created by Jethro Liu on 2025/11/18.
 //
 
 import Foundation
 
-struct TrendingMoviesResponse: Codable {
+struct TrendingTVsResponse: Codable {
     let page: Int
-    let results: [Movie]
+    let results: [TV]
 }
 
-struct Movie: Codable {
+struct TV: Codable {
     let adult: Bool
     let backdropPath: String?
     let id: Int
-    let title: String?
-    let originalTitle: String
+    let name: String
+    let originalName: String
     let overview: String
     let posterPath: String?
     let mediaType: String
     let originalLanguage: String
     let genreIds: [Int]
     let popularity: Double
-    let releaseDate: String?
-    let video: Bool?
+    let firstAirDate: String?
     let voteAverage: Double
     let voteCount: Int
+    let originCountry: [String]
     
     enum CodingKeys: String, CodingKey {
         case adult
         case backdropPath = "backdrop_path"
         case id
-        case title
-        case originalTitle = "original_title"
+        case name
+        case originalName = "original_name"
         case overview
         case posterPath = "poster_path"
         case mediaType = "media_type"
         case originalLanguage = "original_language"
         case genreIds = "genre_ids"
         case popularity
-        case releaseDate = "release_date"
-        case video
+        case firstAirDate = "first_air_date"
         case voteAverage = "vote_average"
         case voteCount = "vote_count"
+        case originCountry = "origin_country"
     }
-}
-
-struct TrendingTitleResponse: Codable {
-    let results: [Title]
-}
-
-struct Title: Codable {
-    let id: Int
-    let media_type: String?
-    let original_name: String?
-    let original_title: String?
-    let poster_path: String?
-    let overview: String?
-    let vote_count: Int
-    let release_date: String?
-    let vote_average: Double
 }

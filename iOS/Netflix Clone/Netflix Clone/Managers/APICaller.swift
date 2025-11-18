@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Constants {
+enum Constants {
     static let baseURL = "https://api.themoviedb.org/3"
     static let bearerToken = APIKeys.tmdbBearerToken
 }
@@ -19,9 +19,9 @@ enum APIError: Error {
     case decodingError
 }
 
-actor APICaller {
+final class APICaller {
     static let shared = APICaller()
-    
+
     private init() {}
     
     // MARK: - Private Helper Methods
@@ -58,7 +58,7 @@ actor APICaller {
     
     // MARK: - Public API Methods
     
-    func getTrendingMovies() async throws -> [Movie] {
+    func getTrendingMovies() async throws -> [Title] {
         guard let url = URL(string: "\(Constants.baseURL)/trending/movie/day") else {
             throw APIError.invalidURL
         }
@@ -72,7 +72,82 @@ actor APICaller {
             throw APIError.invalidURL
         }
         
-        let response: TrendingMoviesResponse = try await fetchData(from: finalURL)
+        let response: TrendingTitleResponse = try await fetchData(from: finalURL)
+        return response.results
+    }
+    
+    func getTrendingTVs() async throws -> [Title] {
+        guard let url = URL(string: "\(Constants.baseURL)/trending/tv/day") else {
+            throw APIError.invalidURL
+        }
+        
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        components?.queryItems = [
+            URLQueryItem(name: "language", value: "en-US")
+        ]
+        
+        guard let finalURL = components?.url else {
+            throw APIError.invalidURL
+        }
+        
+        let response: TrendingTitleResponse = try await fetchData(from: finalURL)
+        return response.results
+    }
+    
+    func getUpcomingMovies() async throws -> [Title] {
+        guard let url = URL(string: "\(Constants.baseURL)/movie/upcoming") else {
+            throw APIError.invalidURL
+        }
+        
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        components?.queryItems = [
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "page", value: "1")
+        ]
+        
+        guard let finalURL = components?.url else {
+            throw APIError.invalidURL
+        }
+        
+        let response: TrendingTitleResponse = try await fetchData(from: finalURL)
+        return response.results
+    }
+    
+    func getPopularMovies() async throws -> [Title] {
+        guard let url = URL(string: "\(Constants.baseURL)/movie/popular") else {
+            throw APIError.invalidURL
+        }
+        
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        components?.queryItems = [
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "page", value: "1")
+        ]
+        
+        guard let finalURL = components?.url else {
+            throw APIError.invalidURL
+        }
+        
+        let response: TrendingTitleResponse = try await fetchData(from: finalURL)
+        return response.results
+    }
+    
+    func getTopRatedMovies() async throws -> [Title] {
+        guard let url = URL(string: "\(Constants.baseURL)/movie/top_rated") else {
+            throw APIError.invalidURL
+        }
+        
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        components?.queryItems = [
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "page", value: "1")
+        ]
+        
+        guard let finalURL = components?.url else {
+            throw APIError.invalidURL
+        }
+        
+        let response: TrendingTitleResponse = try await fetchData(from: finalURL)
         return response.results
     }
 }

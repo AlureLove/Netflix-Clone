@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DD0901F32ECCA20800215967 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DD0901F22ECCA20800215967 /* Kingfisher */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		DDD74FF12EAE4FC9005DD3C1 /* Netflix Clone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Netflix Clone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD0901F32ECCA20800215967 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = "Netflix Clone";
 			packageProductDependencies = (
+				DD0901F22ECCA20800215967 /* Kingfisher */,
 			);
 			productName = "Netflix Clone";
 			productReference = DDD74FF12EAE4FC9005DD3C1 /* Netflix Clone.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = DDD74FE82EAE4FC9005DD3C1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DD0901F12ECCA20800215967 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DDD74FF22EAE4FC9005DD3C1 /* Products */;
 			projectDirPath = "";
@@ -343,6 +352,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DD0901F12ECCA20800215967 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DD0901F22ECCA20800215967 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD0901F12ECCA20800215967 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = DDD74FE92EAE4FC9005DD3C1 /* Project object */;
 }
