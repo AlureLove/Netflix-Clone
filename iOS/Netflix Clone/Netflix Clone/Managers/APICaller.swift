@@ -150,4 +150,26 @@ final class APICaller {
         let response: TrendingTitleResponse = try await fetchData(from: finalURL)
         return response.results
     }
+    
+    func getDiscoverMovies() async throws -> [Title] {
+        guard let url = URL(string: "\(Constants.baseURL)/discover/movie") else {
+            throw APIError.invalidURL
+        }
+        
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: true)
+        components?.queryItems = [
+            URLQueryItem(name: "include_adult", value: "false"),
+            URLQueryItem(name: "include_video", value: "false"),
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "page", value: "1"),
+            URLQueryItem(name: "sort_by", value: "popularity.desc")
+        ]
+        
+        guard let finalURL = components?.url else {
+            throw APIError.invalidURL
+        }
+        
+        let response: TrendingTitleResponse = try await fetchData(from: finalURL)
+        return response.results
+    }
 }
