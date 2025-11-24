@@ -58,4 +58,21 @@ extension CollectionViewTableViewCell: UICollectionViewDataSource, UICollectionV
         cell.configure(with: titles[indexPath.row].poster_path ?? "https://picsum.photos/200")
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let title = titles[indexPath.row]
+        
+        guard let titleName = title.original_title ?? title.original_name else { return }
+        
+        Task {
+            do {
+                let videoElement = try await APICaller.shared.getMovie(with: titleName + "trailer")
+                print(videoElement.id)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
 }

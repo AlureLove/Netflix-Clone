@@ -10,6 +10,7 @@ import Foundation
 enum Constants {
     static let baseURL = "https://api.themoviedb.org/3"
     static let bearerToken = APIKeys.tmdbBearerToken
+    static let youtubeBaseURL = "https://youtube.googleapis.com/youtube/v3/search?"
 }
 
 enum APIError: Error {
@@ -180,5 +181,30 @@ final class APICaller {
         
         let response: TrendingTitleResponse = try await fetchData(from: url)
         return response.results
+    }
+    
+    func getMovie(with query: String) async throws -> VideoElement {
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { throw APIError.decodingError }
+        guard let url = URL(string: "\(Constants.youtubeBaseURL)q=\(query)&key=\(APIKeys.YouTubeAPIKey)") else {
+            throw APIError.invalidURL
+        }
+        
+        let request = URLRequest(url: url)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.invalidResponse
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            let response = try decoder.decode(YoutubeSearchResponse.self, from: data)
+            
+            return response.items[0]
+        } catch {
+            print("Decoding error: \(error)")
+            throw APIError.decodingError
+        }
     }
 }
