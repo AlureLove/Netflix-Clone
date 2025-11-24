@@ -172,4 +172,13 @@ final class APICaller {
         let response: TrendingTitleResponse = try await fetchData(from: finalURL)
         return response.results
     }
+    
+    func search(with query: String) async throws -> [Title] {
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { throw APIError.decodingError }
+        
+        guard let url = URL(string: "\(Constants.baseURL)/search/movie?query=\(query)") else { throw APIError.invalidURL }
+        
+        let response: TrendingTitleResponse = try await fetchData(from: url)
+        return response.results
+    }
 }

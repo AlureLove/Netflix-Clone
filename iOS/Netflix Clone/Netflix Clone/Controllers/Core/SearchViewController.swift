@@ -16,6 +16,13 @@ class SearchViewController: UIViewController {
         tableView.register(TitleTableViewCell.self, forCellReuseIdentifier: TitleTableViewCell.identifier)
         return tableView
     }()
+    
+    private let searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: SearchResultsViewController())
+        searchController.searchBar.placeholder = "Search for a Movie or TV Show"
+        searchController.searchBar.searchBarStyle = .minimal
+        return searchController
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +36,13 @@ class SearchViewController: UIViewController {
         discoverTable.delegate = self
         discoverTable.dataSource = self
         
+        navigationItem.searchController = searchController
+        
+        navigationController?.navigationBar.tintColor = .white
+        
         fetchDiscoverMovies()
+        
+        searchController.searchResultsUpdater = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -70,5 +83,28 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         140
+    }
+}
+
+extension SearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        
+        guard let query = searchBar.text,
+        !query.trimmingCharacters(in: .whitespaces).isEmpty,
+        query.trimmingCharacters(in: .whitespaces).count >= 3,
+        let resultsController = searchController.searchResultsController as? SearchResultsViewController else { return }
+        
+        Task {
+            do {
+                let titles = try await APICaller.shared.search(with: query)
+                await MainActor.run {
+                    resultsController.titles = titles
+                    resultsController.searchResultsCollectionView.reloadData()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }
