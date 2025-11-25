@@ -144,6 +144,7 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         if let titles = sectionData[indexPath.section] {
             cell.configure(with: titles)
         }
+        cell.delegate = self
         
         return cell
     }
@@ -173,5 +174,13 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         let offset = scrollView.contentOffset.y + defaultOffset
         
         navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
+    }
+}
+
+extension HomeViewController: CollectionViewTableViewCellDelegate {
+    func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
+        let vc = TitlePreviewViewController()
+        vc.config(with: viewModel)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
