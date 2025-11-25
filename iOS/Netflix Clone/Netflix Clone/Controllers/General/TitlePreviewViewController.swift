@@ -37,7 +37,15 @@ class TitlePreviewViewController: UIViewController {
     }()
     
     private let webView: WKWebView = {
-        let webView = WKWebView()
+        let preferences = WKWebpagePreferences()
+        preferences.allowsContentJavaScript = true
+        
+        let configuration = WKWebViewConfiguration()
+        configuration.defaultWebpagePreferences = preferences
+        configuration.allowsInlineMediaPlayback = true
+        configuration.mediaTypesRequiringUserActionForPlayback = []
+        
+        let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
     }()
@@ -89,9 +97,56 @@ class TitlePreviewViewController: UIViewController {
     
     func config(with model: TitlePreviewViewModel) {
         titleLabel.text = model.title
-        overviewLabel.text = model.title
+        overviewLabel.text = model.titleOverview
         
-        guard let url = URL(string: "https://www.youtube.com/embed/\(model.youtubeView.id.videoId)") else { return }
-        webView.load(URLRequest(url: url))
+        let embedUrl = "https://www.youtube-nocookie.com/embed/\(model.youtubeView.id.videoId)?playsinline=1&rel=0&modestbranding=1"
+        
+        guard let baseURL = URL(string: "https://www.youtube-nocookie.com") else { return }
+        
+        let html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                }
+                html, body {
+                    width: 100%;
+                    height: 100%;
+                    background-color: #000;
+                    overflow: hidden;
+                }
+                .video-container {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                }
+                iframe {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="video-container">
+                <iframe src="\(embedUrl)" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen
+                        referrerpolicy="strict-origin-when-cross-origin">
+                </iframe>
+            </div>
+        </body>
+        </html>
+        """
+        
+        webView.loadHTMLString(html, baseURL: baseURL)
     }
 }
