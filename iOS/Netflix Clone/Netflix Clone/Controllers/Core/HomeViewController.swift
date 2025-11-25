@@ -17,6 +17,10 @@ enum Sections: Int {
 
 class HomeViewController: UIViewController {
     
+    private var randomTrendingMovie: Title?
+    
+    private var headerView: HeroHeaderUIView?
+    
     let sectionTitles: [String] = ["Trending Movies", "Trending TV", "Popular", "Upcoming Movies", "Top Rated"]
     
     // Cache data for each section
@@ -39,8 +43,10 @@ class HomeViewController: UIViewController {
         
         configureNavbar()
         
-        let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
+        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
+        
+        configureHeroHeaderView()
         
         loadAllSections()
     }
@@ -74,6 +80,19 @@ class HomeViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
+    }
+    
+    private func configureHeroHeaderView() {
+        Task {
+            do {
+                let movies = try await APICaller.shared.getTrendingMovies()
+                let selectedTitle = movies.randomElement()
+                self.randomTrendingMovie = selectedTitle
+                self.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_name ?? selectedTitle?.original_title ?? "unknown", posterURL: selectedTitle?.poster_path ?? "https://picsum.photos/200"))
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
     
     // MARK: - Networking
@@ -110,17 +129,6 @@ class HomeViewController: UIViewController {
                 print("✅ Successfully loaded all sections")
             } catch {
                 print("❌ Error loading sections: \(error)")
-            }
-        }
-    }
-    
-    private func fetchTrendingMovies() {
-        Task {
-            do {
-                let movies = try await APICaller.shared.getTrendingMovies()
-                print("✅ Successfully fetched \(movies.count) trending movies")
-            } catch {
-                print("❌ Error fetching trending movies: \(error)")
             }
         }
     }
