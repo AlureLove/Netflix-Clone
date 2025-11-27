@@ -2,7 +2,7 @@
 //  DanmakuView.swift
 //  Netflix Clone
 //
-//  Created by Claude on 2025/11/27.
+//  Created by Jethro on 2025/11/27.
 //
 
 import UIKit
