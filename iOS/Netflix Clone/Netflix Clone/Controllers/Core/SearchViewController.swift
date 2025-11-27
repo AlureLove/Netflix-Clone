@@ -93,7 +93,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
         
         Task { [weak self] in
             do {
-                let videoElement = try await APICaller.shared.getMovie(with: titleName + "trailer")
+                let videoElement = try await APICaller.shared.getYoutubeTrailer(with: titleName + "trailer")
                 
                 await MainActor.run {
                     let vc = TitlePreviewViewController()

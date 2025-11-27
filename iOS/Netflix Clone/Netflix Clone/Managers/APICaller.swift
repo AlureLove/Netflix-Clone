@@ -183,7 +183,7 @@ final class APICaller {
         return response.results
     }
     
-    func getMovie(with query: String) async throws -> VideoElement {
+    func getYoutubeTrailer(with query: String) async throws -> VideoElement {
         guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { throw APIError.decodingError }
         guard let url = URL(string: "\(Constants.youtubeBaseURL)q=\(query)&key=\(APIKeys.YouTubeAPIKey)") else {
             throw APIError.invalidURL

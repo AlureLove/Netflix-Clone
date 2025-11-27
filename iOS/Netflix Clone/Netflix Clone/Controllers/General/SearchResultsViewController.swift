@@ -64,7 +64,7 @@ extension SearchResultsViewController: UICollectionViewDelegate, UICollectionVie
         
         Task { [weak self] in
             do {
-                let videoElement = try await APICaller.shared.getMovie(with: titleName + "trailer")
+                let videoElement = try await APICaller.shared.getYoutubeTrailer(with: titleName + "trailer")
                 await MainActor.run {
                     self?.delegate?.searchResultsViewControllerDidTapItem(TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverview: title.overview ?? ""))
                 }

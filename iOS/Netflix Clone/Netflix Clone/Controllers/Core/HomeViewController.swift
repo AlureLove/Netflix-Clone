@@ -8,11 +8,11 @@
 import UIKit
 
 enum Sections: Int {
-    case TrendingMovies = 0
-    case TrendingTV
-    case Popular
-    case UpcomingMovies
-    case TopRated
+    case trendingMovies = 0
+    case trendingTV
+    case popular
+    case upcomingMovies
+    case topRated
 }
 
 class HomeViewController: UIViewController {
@@ -117,12 +117,12 @@ class HomeViewController: UIViewController {
                 
                 // Update on main thread
                 await MainActor.run {
-                    self.sectionData[Sections.TrendingMovies.rawValue] = results.0
-                    self.sectionData[Sections.TrendingTV.rawValue] = results.1
-                    self.sectionData[Sections.Popular.rawValue] = results.2
-                    self.sectionData[Sections.UpcomingMovies.rawValue] = results.3
-                    self.sectionData[Sections.TopRated.rawValue] = results.4
-                    
+                    self.sectionData[Sections.trendingMovies.rawValue] = results.0
+                    self.sectionData[Sections.trendingTV.rawValue] = results.1
+                    self.sectionData[Sections.popular.rawValue] = results.2
+                    self.sectionData[Sections.upcomingMovies.rawValue] = results.3
+                    self.sectionData[Sections.topRated.rawValue] = results.4
+
                     self.homeFeedTable.reloadData()
                 }
                 
@@ -186,7 +186,7 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension HomeViewController: CollectionViewTableViewCellDelegate {
-    func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
         let vc = TitlePreviewViewController()
         vc.config(with: viewModel)
         navigationController?.pushViewController(vc, animated: true)
