@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CollectionViewTableViewCellDelegate: AnyObject {
-    func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel)
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel)
 }
 
 class CollectionViewTableViewCell: UITableViewCell {
@@ -74,11 +74,11 @@ extension CollectionViewTableViewCell: UICollectionViewDataSource, UICollectionV
         
         Task {
             do {
-                let videoElement = try await APICaller.shared.getMovie(with: titleName + "trailer")
+                let videoElement = try await APICaller.shared.getYoutubeTrailer(with: titleName + "trailer")
                 
                 let viewModel = TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverview: title.overview ?? "unknown")
-                
-                delegate?.CollectionViewTableViewCellDidTapCell(self, viewModel: viewModel)
+
+                delegate?.collectionViewTableViewCellDidTapCell(self, viewModel: viewModel)
             } catch {
                 print(error.localizedDescription)
             }
